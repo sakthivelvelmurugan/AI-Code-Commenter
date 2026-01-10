@@ -1,0 +1,27 @@
+Language: JAVA
+// Save code + comments
+String historyEntry = "Language: " + language + "\n" + code + "\nAI Comments:\n" + comments + "\n\n";
+Files.write(Paths.get("history.txt"), historyEntry.getBytes(StandardCharsets.UTF_8),
+            StandardOpenOption.CREATE, StandardOpenOption.APPEND);END
+
+AI Comments:
+Certainly! Here are clear, line-by-line comments for the provided Java code:
+
+```java
+// Create a string variable 'historyEntry' that formats a history entry for saving
+String historyEntry = "Language: " + language + "\n" + // Concatenate the "Language: " label with the 'language' variable and a newline
+                      code + "\n" +                  // Add the 'code' content followed by a newline
+                      "AI Comments:\n" +            // Add the label "AI Comments:" followed by a newline
+                      comments + "\n" +             // Append the 'comments' content followed by a newline
+                      "";                             // Ensure the string ends with a newline
+
+// Write the 'historyEntry' string to a file named "history.txt"
+Files.write(Paths.get("history.txt"),                        // Specify the file path to "history.txt"
+            historyEntry.getBytes(StandardCharsets.UTF_8),   // Convert 'historyEntry' to bytes using UTF-8 encoding
+            // Specify options for writing to the file
+            StandardOpenOption.CREATE,                        // Create the file if it does not exist
+            StandardOpenOption.APPEND);                       // Append to the file if it already exists
+```
+
+These comments clarify the purpose and function of each line in the provided code, making it easier for someone to understand what it does.
+
