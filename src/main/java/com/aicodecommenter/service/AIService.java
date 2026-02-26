@@ -1,8 +1,7 @@
 package com.aicodecommenter.service;
 
+import com.aicodecommenter.api.HttpClientUtil;
 import com.google.gson.*;
-import java.net.URI;
-import java.net.http.*;
 
 public class AIService {
 
@@ -11,8 +10,9 @@ public class AIService {
 
     public static String generateComments(String lang, String code) {
         try {
-            String prompt = "Add clear and professional comments to the following "
-                    + lang + " code.\n\nCode:\n" + code;
+            // Use PromptBuilder to build the prompt
+            Language language = Language.valueOf(lang.toUpperCase());
+            String prompt = PromptBuilder.buildPrompt(language, code);
 
             JsonObject body = new JsonObject();
             body.addProperty("model", "openai/gpt-3.5-turbo");
@@ -24,20 +24,10 @@ public class AIService {
             body.add("messages", new JsonArray());
             body.getAsJsonArray("messages").add(msg);
 
-            HttpRequest req = HttpRequest.newBuilder()
-                    .uri(URI.create(API_URL))
-                    .header("Authorization", "Bearer " + API_KEY)
-                    .header("Content-Type", "application/json")
-                    .POST(HttpRequest.BodyPublishers.ofString(body.toString()))
-                    .build();
+            // Use HttpClientUtil to make the HTTP request
+            String response = HttpClientUtil.post(API_URL, body.toString(), API_KEY);
 
-            HttpResponse<String> res = HttpClient.newHttpClient()
-                    .send(req, HttpResponse.BodyHandlers.ofString());
-
-            if (res.statusCode() != 200)
-                return "API Error: HTTP " + res.statusCode() + " - " + res.body();
-
-            JsonObject json = JsonParser.parseString(res.body()).getAsJsonObject();
+            JsonObject json = JsonParser.parseString(response).getAsJsonObject();
 
             if (json.has("error"))
                 return "API Error: " + json.getAsJsonObject("error")
