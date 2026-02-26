@@ -3,77 +3,50 @@ package com.aicodecommenter.service;
 import com.google.gson.*;
 import java.net.URI;
 import java.net.http.*;
-import java.nio.charset.StandardCharsets;
 
 public class AIService {
 
-    // ✅ Put your key directly for now (college project)
-    private static final String API_KEY = "xxx";
-
-    // ✅ OpenRouter endpoint
+    private static final String API_KEY = "YOUR_API_KEY";
     private static final String API_URL = "https://openrouter.ai/api/v1/chat/completions";
 
-    public static String generateComments(String language, String code) {
-
+    public static String generateComments(String lang, String code) {
         try {
-            String prompt = """
-            Add clear and professional comments to the following %s code.
-            Keep it simple and clean.
+            String prompt = "Add clear and professional comments to the following "
+                    + lang + " code.\n\nCode:\n" + code;
 
-            Code:
-            %s
-            """.formatted(language, code);
-
-            // ---------- Request Body ----------
             JsonObject body = new JsonObject();
             body.addProperty("model", "openai/gpt-3.5-turbo");
 
-            JsonArray messages = new JsonArray();
             JsonObject msg = new JsonObject();
             msg.addProperty("role", "user");
             msg.addProperty("content", prompt);
-            messages.add(msg);
 
-            body.add("messages", messages);
+            body.add("messages", new JsonArray());
+            body.getAsJsonArray("messages").add(msg);
 
-            // ---------- HTTP Request ----------
-            HttpRequest request = HttpRequest.newBuilder()
+            HttpRequest req = HttpRequest.newBuilder()
                     .uri(URI.create(API_URL))
                     .header("Authorization", "Bearer " + API_KEY)
                     .header("Content-Type", "application/json")
-                    .POST(HttpRequest.BodyPublishers.ofString(body.toString(), StandardCharsets.UTF_8))
+                    .POST(HttpRequest.BodyPublishers.ofString(body.toString()))
                     .build();
 
-            HttpClient client = HttpClient.newHttpClient();
-            HttpResponse<String> response =
-                    client.send(request, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> res = HttpClient.newHttpClient()
+                    .send(req, HttpResponse.BodyHandlers.ofString());
 
-            // ---------- Response Parsing ----------
-            JsonObject json = JsonParser.parseString(response.body()).getAsJsonObject();
+            if (res.statusCode() != 200)
+                return "API Error: HTTP " + res.statusCode() + " - " + res.body();
 
-            // 🔐 SAFETY CHECK
-            if (!json.has("choices")) {
-                if (json.has("error")) {
-                    return "API Error: " +
-                            json.getAsJsonObject("error")
-                                .get("message")
-                                .getAsString();
-                }
-                return "Unexpected API response.";
-            }
+            JsonObject json = JsonParser.parseString(res.body()).getAsJsonObject();
 
-            JsonArray choices = json.getAsJsonArray("choices");
+            if (json.has("error"))
+                return "API Error: " + json.getAsJsonObject("error")
+                        .get("message").getAsString();
 
-            if (choices.size() == 0) {
-                return "No response from AI.";
-            }
-
-            JsonObject message =
-                    choices.get(0)
-                           .getAsJsonObject()
-                           .getAsJsonObject("message");
-
-            return message.get("content").getAsString();
+            return json.getAsJsonArray("choices")
+                    .get(0).getAsJsonObject()
+                    .getAsJsonObject("message")
+                    .get("content").getAsString();
 
         } catch (Exception e) {
             return "Error: " + e.getMessage();

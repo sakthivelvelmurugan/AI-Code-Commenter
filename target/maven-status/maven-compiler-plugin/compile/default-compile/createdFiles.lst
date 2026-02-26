@@ -1,0 +1,7 @@
+com\aicodecommenter\service\PromptBuilder.class
+com\aicodecommenter\service\Language.class
+com\aicodecommenter\MainApp.class
+com\aicodecommenter\api\HttpClientUtil.class
+com\aicodecommenter\service\AIService.class
+com\aicodecommenter\ui\JavaFXUI.class
+com\aicodecommenter\util\JsonParserUtil.class
