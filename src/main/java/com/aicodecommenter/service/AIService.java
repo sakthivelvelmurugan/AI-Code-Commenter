@@ -5,13 +5,20 @@ import com.google.gson.*;
 
 public class AIService {
 
-    private static final String API_KEY = "YOUR_API_KEY";
+    private static final String API_KEY = "xxxx"; // Replace with your actual API key
     private static final String API_URL = "https://openrouter.ai/api/v1/chat/completions";
+
+    private static Language convertToLanguage(String lang) {
+        if ("C++".equals(lang)) {
+            return Language.CPP;
+        }
+        return Language.valueOf(lang.toUpperCase());
+    }
 
     public static String generateComments(String lang, String code) {
         try {
             // Use PromptBuilder to build the prompt
-            Language language = Language.valueOf(lang.toUpperCase());
+            Language language = convertToLanguage(lang);
             String prompt = PromptBuilder.buildPrompt(language, code);
 
             JsonObject body = new JsonObject();
