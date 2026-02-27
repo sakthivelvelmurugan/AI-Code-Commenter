@@ -54,8 +54,8 @@ public class JavaFXUI extends Application {
 
         // Combining left and right panes horizontally
         HBox split = new HBox(10, left, right);
-        split.setHgrow(left, Priority.ALWAYS);
-        split.setHgrow(right, Priority.ALWAYS);
+        HBox.setHgrow(left, Priority.ALWAYS);
+        HBox.setHgrow(right, Priority.ALWAYS);
 
         // Creating root layout with language selection, code input, comments output, and generate button
         VBox root = new VBox(15, languageBox, split, generateBtn);
