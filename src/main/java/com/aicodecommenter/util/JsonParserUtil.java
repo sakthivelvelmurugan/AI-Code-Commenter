@@ -6,9 +6,15 @@ public class JsonParserUtil {
 
     public static String extractComments(String jsonResponse) {
         try {
-            JsonArray choices = JsonParser.parseString(jsonResponse)
-                    .getAsJsonObject()
-                    .getAsJsonArray("choices");
+            JsonObject json = JsonParser.parseString(jsonResponse).getAsJsonObject();
+            
+            // Check for API errors
+            if (json.has("error")) {
+                return "API Error: " + json.getAsJsonObject("error")
+                        .get("message").getAsString();
+            }
+            
+            JsonArray choices = json.getAsJsonArray("choices");
 
             if (choices != null && choices.size() > 0) {
                 JsonObject message = choices.get(0)

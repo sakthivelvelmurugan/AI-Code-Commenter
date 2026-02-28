@@ -1,6 +1,7 @@
 package com.aicodecommenter.service;
 
 import com.aicodecommenter.api.HttpClientUtil;
+import com.aicodecommenter.util.JsonParserUtil;
 import com.google.gson.*;
 
 public class AIService {
@@ -34,16 +35,8 @@ public class AIService {
             // Use HttpClientUtil to make the HTTP request
             String response = HttpClientUtil.post(API_URL, body.toString(), API_KEY);
 
-            JsonObject json = JsonParser.parseString(response).getAsJsonObject();
-
-            if (json.has("error"))
-                return "API Error: " + json.getAsJsonObject("error")
-                        .get("message").getAsString();
-
-            return json.getAsJsonArray("choices")
-                    .get(0).getAsJsonObject()
-                    .getAsJsonObject("message")
-                    .get("content").getAsString();
+            // Use JsonParserUtil to extract comments from the response
+            return JsonParserUtil.extractComments(response);
 
         } catch (Exception e) {
             return "Error: " + e.getMessage();
